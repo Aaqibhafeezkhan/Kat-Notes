@@ -1,0 +1,7 @@
+
+.btn {
+    border-radius: 10px;
+    border-width: 0;
+    background-color: var(--todo-nav-btns);
+    padding: 1rem;
+}

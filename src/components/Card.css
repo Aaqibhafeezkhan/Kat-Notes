@@ -1,0 +1,12 @@
+
+.card {
+    background-color: var(--todo-bg);
+    list-style: none;
+    padding: 0.5rem 1rem;
+    border-radius: 10px;
+    margin-bottom: 0.5rem;
+}
+
+li {
+    list-style: none;
+}

@@ -1,0 +1,19 @@
+
+.todo-list {
+    background-color: var(--todo-list-bg);
+    padding: 1rem;
+    padding-bottom: 0.5rem;
+    border-radius: 15px;
+}
+
+.todo-nav {
+    display: flex;
+}
+
+.todo-nav-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    flex: 1;
+    margin-bottom: 0.5rem;
+}

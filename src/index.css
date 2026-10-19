@@ -1,0 +1,48 @@
+
+/* --Themes-- */
+
+/* Reference colors */
+.reference {
+  --purple: #b590ca; 
+	--blue: #a8d3da; 
+	--peach: #f5cab3; 
+	--yellow: #f3ecb8; 
+}
+
+/* Light theme (default) */
+:root {
+  --bg: #f3ecb8;
+  --text-color: #333;
+  --toggle-btn: #ffffff;
+  --navbar-bg: #b590ca;
+  --todo-bg: #f5cab3;
+  --todo-list-bg: #b590ca;
+  --todo-nav-btns: #a8d3da;
+}
+
+/* Dark theme */
+.dark {
+  --bg: #3f3939;
+  --text-color: #faefef;
+  --toggle-btn: #707070;
+  --navbar-bg: rgb(119, 112, 101);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "DM Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 800;
+  font-style: normal;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  line-height: 1.6;
+  background-color: var(--bg);
+  color: var(--text-color);
+  min-height: 100dvh;
+}
+
