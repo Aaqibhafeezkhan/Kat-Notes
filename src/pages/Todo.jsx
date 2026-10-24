@@ -6,14 +6,14 @@ import {
   query,
   orderBy,
   serverTimestamp,
+  doc,
   updateDoc,
 } from "firebase/firestore";
+
 import { db } from "../firebase.js";
-import { Card } from "../components/Card.jsx";
 import { Button } from "../components/Button.jsx";
 import { AddTaskModal } from "../components/AddTaskModal.jsx";
-import { TodoView } from "../components/TodoView.jsx";
-import { TodoEdit } from "../components/TodoEdit.jsx";
+import { TodoItem } from "../components/TodoItem.jsx";
 import "./Todo.css";
 
 export function Todo() {
@@ -24,17 +24,8 @@ export function Todo() {
   async function loadTodos() {
     const q = query(collection(db, "todos"), orderBy("createdAt", "asc"));
     const snapshot = await getDocs(q);
-
-    const items = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
-
+    const items = snapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
     setTodos(items);
-  }
-
-  function renderTodo(todo){
-
   }
 
   useEffect(() => {
@@ -45,52 +36,39 @@ export function Todo() {
     const text = task.trim();
     if (text === "") return;
 
-    const tempTodo = {
-      id: `temp-${Date.now()}`,
-      text,
-      completed: false
-    }
-
-    // Display the new task temporarily
+    const tempTodo = { id: `temp-${Date.now()}`, text, completed: false };
     setTodos((prev) => [...prev, tempTodo]);
     setModalIsVisible(false);
-    
-    // Add the task to database
+
     try {
       await addDoc(collection(db, "todos"), {
-        text: task.trim(),
+        text,
         completed: false,
         createdAt: serverTimestamp(),
       });
-      await loadTodos();      
+      await loadTodos();
     } catch (e) {
       console.error(e);
-      // Rollback if adding the task failed
       setTodos((prev) => prev.filter((t) => t.id !== tempTodo.id));
     }
   }
 
   async function editTodo(id, newText) {
-    setTodos((prev) => 
-      prev.map((todoItem) => 
-      (todoItem.id === id ?    // Only edit the todoItem thats matching the one we're supposed to edit
-        { ...todoItem, text: newText} : todoItem 
+    setTodos((prev) =>
+      prev.map((todoItem) =>
+        todoItem.id === id ? { ...todoItem, text: newText } : todoItem
       )
-    ));    
+    );
     setEditingId(null);
 
-    // Update firebase
     try {
-      await updateDoc(
-        doc(db, "todos", id), 
-        { text: newText }
-      );
+      await updateDoc(doc(db, "todos", id), { text: newText });
     } catch (e) {
       console.error(e);
       await loadTodos();
     }
   }
-  
+
   return (
     <div>
       <div class="todo-nav">
@@ -104,7 +82,15 @@ export function Todo() {
       <div class="todo-list">
         <ul>
           {todos.map((todo) => (
-            <li key={todo.id}>{renderTodo(todo)}</li>
+            <li key={todo.id}>
+              <TodoItem
+                todo={todo}
+                isEditing={todo.id === editingId}
+                onEdit={() => setEditingId(todo.id)}
+                onSave={(newText) => editTodo(todo.id, newText)}
+                onCancel={() => setEditingId(null)}
+              />
+            </li>
           ))}
         </ul>
       </div>
