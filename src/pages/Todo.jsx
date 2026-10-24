@@ -6,13 +6,14 @@ import {
   query,
   orderBy,
   serverTimestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../firebase.js";
-import { TodoEdit } from "../components/TodoEdit.jsx";
-import { TodoView } from "../components/TodoView.jsx";
 import { Card } from "../components/Card.jsx";
 import { Button } from "../components/Button.jsx";
 import { AddTaskModal } from "../components/AddTaskModal.jsx";
+import { TodoView } from "../components/TodoView.jsx";
+import { TodoEdit } from "../components/TodoEdit.jsx";
 import "./Todo.css";
 
 export function Todo() {
@@ -30,6 +31,10 @@ export function Todo() {
     }));
 
     setTodos(items);
+  }
+
+  function renderTodo(todo){
+
   }
 
   useEffect(() => {
@@ -65,13 +70,33 @@ export function Todo() {
     }
   }
 
+  async function editTodo(id, newText) {
+    setTodos((prev) => 
+      prev.map((todoItem) => 
+      (todoItem.id === id ?    // Only edit the todoItem thats matching the one we're supposed to edit
+        { ...todoItem, text: newText} : todoItem 
+      )
+    ));    
+    setEditingId(null);
+
+    // Update firebase
+    try {
+      await updateDoc(
+        doc(db, "todos", id), 
+        { text: newText }
+      );
+    } catch (e) {
+      console.error(e);
+      await loadTodos();
+    }
+  }
+  
   return (
     <div>
       <div class="todo-nav">
         <h1>Todo List</h1>
         <div class="todo-nav-buttons">
           <Button onClick={() => setModalIsVisible(true)}>Add</Button>
-          <Button onClick={() => console.log("clicked!")}>Edit</Button>
           <Button onClick={() => console.log("clicked!")}>Lists</Button>
         </div>
       </div>
@@ -79,9 +104,7 @@ export function Todo() {
       <div class="todo-list">
         <ul>
           {todos.map((todo) => (
-            <li key={todo.id}>
-              <Card>{todo.text}</Card>
-            </li>
+            <li key={todo.id}>{renderTodo(todo)}</li>
           ))}
         </ul>
       </div>
